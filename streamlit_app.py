@@ -37,11 +37,12 @@ st.header("Случайные 10 строк")
 st.dataframe(data.sample(10), use_container_width=True)
 
 st.header("Визуализация")
+palette = sns.color_palette("Set2", n_colors=8).as_hex()
 
 st.subheader('Распределение целевой переменной')
 sns.set_theme(style="whitegrid", palette="Set2", font_scale=0.9)
 
-fig = px.histogram(data, x='y', color='y', barmode='stack', 
+fig = px.histogram(data, x='y', color='y', barmode='stack', color_discrete_sequence=palette,
                    text_auto=True, width=500, height=400)
 st.plotly_chart(fig, use_container_width=False)
 
@@ -55,6 +56,7 @@ fig1 = px.histogram(
     y="job", 
     color="y", 
     barmode="stack",
+    color_discrete_sequence=palette,
     text_auto=True,
     height=400,
 )
@@ -70,6 +72,7 @@ fig2 = px.histogram(
     data,
     y="marital",
     color="y",
+    color_discrete_sequence=palette,
     barmode="stack",
     text_auto=True,
     height=300,
@@ -86,12 +89,13 @@ fig3 = px.histogram(
     data,
     y="education",
     color="y",
+    color_discrete_sequence=palette,
     barmode="stack",
     text_auto=True,
     height=300,
 )
 fig3.update_layout(
-    title="Сравнение числа клиентов и вкладчиков в разрезе ,br.уровня образования",
+    title="Сравнение числа клиентов и вкладчиков в разрезе <br>уровня образования",
     xaxis_title="",
     yaxis_title="",
     showlegend=False
@@ -111,9 +115,10 @@ fig1 = px.histogram(
     data, 
     y="loan", 
     color="y", 
+    color_discrete_sequence=palette,
     barmode="stack",
     text_auto=True,
-    height=400,
+    height=300,
 )
 fig1.update_layout(
     title="Клиенты и вкладчики по наличию \nперсонального займа",
@@ -127,6 +132,7 @@ fig2 = px.histogram(
     data,
     y="default",
     color="y",
+    color_discrete_sequence=palette,
     barmode="stack",
     text_auto=True,
     height=300,
@@ -143,6 +149,7 @@ fig3 = px.histogram(
     data,
     y="housing",
     color="y",
+    color_discrete_sequence=palette,
     barmode="stack",
     text_auto=True,
     height=300,
@@ -163,27 +170,67 @@ with col3:
     st.plotly_chart(fig3, use_container_width=True)
 
 
-st.subheader('Коммуникация с клиентами, оформившими и не оформившими займ')
-fig = plt.figure(figsize=(12, 6))
-gs = fig.add_gridspec(2, 3, height_ratios=[1.5, 1])
+st.subheader('Коммуникация с клиентами, оформившими и не оформившими займ
 
-ax1 = fig.add_subplot(gs[0, 0])
-ax1.set_title('Клиенты и вкладчики по типу связи')
-ax1.set_xlabel(' ')
-ax1.set_ylabel(' ')
-sns.histplot(data=data, x='contact', hue='y', multiple='stack', ax=ax1, alpha=1.0)
 
-ax2 = fig.add_subplot(gs[0, 1])
-ax2.set_title('Клиенты и вкладчики по месяцу \nпоследнего контакта')
-ax2.set_xlabel(' ')
-ax2.set_ylabel(' ')
-sns.histplot(data=data, x='month', hue='y', multiple='stack', ax=ax2, alpha=1.0)
+fig1 = px.histogram(
+    data, 
+    y="contact", 
+    color="y", 
+    color_discrete_sequence=palette,
+    barmode="stack",
+    text_auto=True,
+    height=300,
+)
+fig1.update_layout(
+    title="Клиенты и вкладчики по типу <br>связи",
+    xaxis_title="",
+    yaxis_title="",
+    showlegend=True
+)
 
-ax3 = fig.add_subplot(gs[0, 2])
-ax3.set_title('Клиенты и вкладчики по \nдню недели последнего контакта')
-ax3.set_xlabel(' ')
-ax3.set_ylabel(' ')
-sns.histplot(data=data, x='day_of_week', hue='y', multiple='stack', ax=ax3, alpha=1.0)
-plt.tight_layout()
+# --- Figure 2: marital ---
+fig2 = px.histogram(
+    data,
+    y="month",
+    color="y",
+    color_discrete_sequence=palette,
+    barmode="stack",
+    text_auto=True,
+    height=300,
+)
+fig2.update_layout(
+    title="Клиенты и вкладчики по месяцу <br>последнего контакта",
+    xaxis_title="",
+    yaxis_title="",
+    showlegend=False
+)
 
-st.pyplot(fig, use_container_width=True)
+# --- Figure 3: education ---
+fig3 = px.histogram(
+    data,
+    y="day_of_week",
+    color="y",
+    color_discrete_sequence=palette,
+    barmode="stack",
+    text_auto=True,
+    height=300,
+)
+fig3.update_layout(
+    title="Клиенты и вкладчики по \nдню недели последнего контакта",
+    xaxis_title="",
+    yaxis_title="",
+    showlegend=False
+)
+
+col1, col2, col3 = st.columns([1, 1, 1]) 
+with col1:
+    st.plotly_chart(fig1, use_container_width=True)
+with col2:
+    st.plotly_chart(fig2, use_container_width=True)
+with col3:
+    st.plotly_chart(fig3, use_container_width=True)
+
+
+
+
