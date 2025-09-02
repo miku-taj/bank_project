@@ -304,6 +304,7 @@ def encode_education(x):
         return 16 
 
 data['education'] = data['education'].apply(encode_education)
+data['y'] = data['y'].apply(lambda x: 0 if x == 'no' else 1)
 
 corr_matrix = data.select_dtypes(include=['int', 'float']).corr()
 
