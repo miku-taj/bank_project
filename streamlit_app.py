@@ -11,12 +11,23 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 from catboost import CatBoostClassifier, Pool
 import streamlit as st
+import plotly.express
 
 st.set_page_config(page_title="Модель классификации вкладчиков банка", layout="wide")
 st.title("Классификация потенциальных вкладчиков")
 st.write("Работа с данными клиентов португальского банка, собранными в ходе маркетинговой кампании")
 
 data = pd.read_csv("https://raw.githubusercontent.com/miku-taj/bank_project/refs/heads/master/bank-additional-full.csv", sep=';')
+
+st.sidebar.markdown('''
+# Разделы
+- [Размер датасета](#razmer-dataseta)
+- [Случайные 10 строк](#sluchaynye-10-strok)
+- [Визуализация](#vizualizatsiya)
+''', unsafe_allow_html=True)
+
+# - [Метрики модели](#metriki-modeli)
+# - [Сделать прогноз](#sdelat-prognoz)
 
 st.header("Размер датасета")
 st.write(f"Строки: {data.shape[0]} Столбцы: {data.shape[1]}")
@@ -29,13 +40,17 @@ st.header("Визуализация")
 st.subheader('Распределение целевой переменной')
 sns.set_theme(style="whitegrid", palette="Set2", font_scale=0.9)
 
-fig, ax = plt.subplots(figsize=(12, 6))
-plt.title('Распределение клиентов, \nоформивших и не оформивших займ')
-sns.countplot(data=data, x='y', hue='y', alpha=1.0, stat="percent", ax=ax)
-plt.ylabel('Процент клиентов')
-plt.xlabel('Оформили займ')
+# fig, ax = plt.subplots(figsize=(12, 6))
+# plt.title('Распределение клиентов, \nоформивших и не оформивших займ')
+# sns.countplot(data=data, x='y', hue='y', alpha=1.0, stat="percent", ax=ax)
+# plt.ylabel('Процент клиентов')
+# plt.xlabel('Оформили займ')
+# st.pyplot(fig)
 
-st.pyplot(fig)
+
+fig = px.histogram(data, x='y', color='y', barmode='stack', 
+                   text_auto=True, width=500, height=400)
+st.plotly_chart(fig, use_container_width=False)
 
 st.write('Классы распределены неравномерно.')
 
