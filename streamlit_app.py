@@ -75,7 +75,7 @@ fig2 = px.histogram(
     height=300,
 )
 fig2.update_layout(
-    title="Сравнение числа клиентов и вкладчиков в разрезе \nсемейного положения",
+    title="Сравнение числа клиентов и вкладчиков в разрезе <br>семейного положения",
     xaxis_title="",
     yaxis_title="",
     showlegend=False
@@ -91,7 +91,7 @@ fig3 = px.histogram(
     height=300,
 )
 fig3.update_layout(
-    title="Сравнение числа клиентов и вкладчиков в разрезе \nуровня образования",
+    title="Сравнение числа клиентов и вкладчиков в разрезе ,br.уровня образования",
     xaxis_title="",
     yaxis_title="",
     showlegend=False
@@ -109,7 +109,7 @@ st.subheader('Другие характеристики клиентов, офо
 
 fig1 = px.histogram(
     data, 
-    x="loan", 
+    y="loan", 
     color="y", 
     barmode="stack",
     text_auto=True,
