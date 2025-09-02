@@ -28,9 +28,9 @@ st.header("Визуализация")
 
 sns.set_theme(style="whitegrid", palette="Set2", font_scale=0.9)
 
-fig = plt.figure(figsize=(8, 6))
+fig, ax = plt.figure(figsize=(8, 6))
 plt.title('Распределение клиентов, \nоформивших и не оформивших займ')
-sns.countplot(data=data, x='y', hue='y', alpha=1.0, stat="percent")
+sns.countplot(data=data, x='y', hue='y', alpha=1.0, stat="percent", ax=ax)
 plt.ylabel('Процент клиентов')
 plt.xlabel('Оформили займ')
 
