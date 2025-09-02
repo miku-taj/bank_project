@@ -16,7 +16,7 @@ st.set_page_config(page_title="Модель классификации вкла�
 st.title("Классификация потенциальных вкладчиков")
 st.write("Работа с данными клиентов португальского банка, собранными в ходе маркетинговой кампании")
 
-data = pd.read_csv("https://raw.githubusercontent.com/miku-taj/bank_project/refs/heads/master/bank-additional-full.csv")
+data = pd.read_csv("https://raw.githubusercontent.com/miku-taj/bank_project/refs/heads/master/bank-additional-full.csv", sep=';')
 
 st.header("Размер датасета")
 st.write(f"Строки: {data.shape[0]} Столбцы: {data.shape[1]}")
