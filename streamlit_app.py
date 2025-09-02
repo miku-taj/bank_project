@@ -88,7 +88,7 @@ st.plotly_chart(fig, use_container_width=False)
 
 st.write('Классы распределены неравномерно.')
 
-st.subheader('Демография клиентов, оформивших и не оформивших займ')
+st.subheader('Демография клиентов, оформивших и не оформивших депозит')
 # Figure: age 
 fig1 = px.histogram(
     data, 
@@ -107,6 +107,7 @@ fig1.update_layout(
 )
 
 st.plotly_chart(fig1, use_container_width=True)
+st.write(f"Нет видимой связи между возрастом и фактом оформления кредита. Кроме того, корреляция близка к 0 ({round(data['age'].corr(y), 3)}).")
 
 # Figure: job 
 fig1 = px.histogram(
@@ -167,7 +168,7 @@ with col2:
     st.plotly_chart(fig3, use_container_width=True)
 
 
-st.subheader('Другие характеристики клиентов, оформивших и не оформивших займ')
+st.subheader('Другие характеристики клиентов, оформивших и не оформивших депозит')
 
 fig1 = px.histogram(
     data, 
@@ -179,7 +180,7 @@ fig1 = px.histogram(
     height=300,
 )
 fig1.update_layout(
-    title="Клиенты и вкладчики по наличию \nперсонального займа",
+    title="Клиенты и вкладчики по наличию <br>персонального займа",
     xaxis_title="",
     yaxis_title="",
     showlegend=True
@@ -196,7 +197,7 @@ fig2 = px.histogram(
     height=300,
 )
 fig2.update_layout(
-    title="Клиенты и вкладчики по факту \nкредитного дефолта",
+    title="Клиенты и вкладчики по факту <br>кредитного дефолта",
     xaxis_title="",
     yaxis_title="",
     showlegend=False
@@ -213,7 +214,7 @@ fig3 = px.histogram(
     height=300,
 )
 fig3.update_layout(
-    title="Клиенты и вкладчики по наличию \nжилищного кредита",
+    title="Клиенты и вкладчики по наличию <br>жилищного кредита",
     xaxis_title="",
     yaxis_title="",
     showlegend=False
@@ -226,9 +227,9 @@ with col2:
     st.plotly_chart(fig2, use_container_width=True)
 with col3:
     st.plotly_chart(fig3, use_container_width=True)
+st.write("Из графиков следует, что наличие персонального или жилищного займа мало/не влияет на оформление депозита. Количество клиентов в кредитном дефолте очень мало, оформленных депозитов нет. ")
 
-
-st.subheader('Коммуникация с клиентами, оформившими и не оформившими займ')
+st.subheader('Коммуникация с клиентами, оформившими и не оформившими депозит')
 
 
 fig1 = px.histogram(
@@ -275,7 +276,7 @@ fig3 = px.histogram(
     height=300,
 )
 fig3.update_layout(
-    title="Клиенты и вкладчики по \nдню недели последнего контакта",
+    title="Клиенты и вкладчики по <br>дню недели последнего контакта",
     xaxis_title="",
     yaxis_title="",
     showlegend=False
@@ -289,6 +290,129 @@ with col2:
 with col3:
     st.plotly_chart(fig3, use_container_width=True)
 
-st.subheader('')
+def encode_education(x):
+    digit = re.search(r'\d', x)
+    if digit:
+        return int(digit.group())
+    if x == 'illiterate':
+        return 0
+    if x == 'high.school':
+        return 12
+    if x == 'professional.course':
+        return 14
+    if x == 'university.degree':
+        return 16 
+
+data['education'] = data['education'].apply(encode_education)
+
+corr_matrix = data.select_dtypes(include=['int', 'float']).corr()
+
+# Plot interactive heatmap
+fig = px.imshow(
+    corr_matrix,
+    text_auto=True,          
+    color_continuous_scale='RdBu_r',
+    aspect='auto',
+    height=400
+)
+
+fig.update_layout(
+    title="Correlation Heatmap",
+    xaxis_title="Features",
+    yaxis_title="Features"
+)
+st.plotly_chart(fig, use_container_width=False)
 
 
+st.header('Предобработка')
+st.write('Удалены пропущенные значения. Признак education переведен в числовой формат (кол-во лет обучения). Остальные категориальные признаки закодированы с помощью One Hot Encoding (что обусловлено небольшим кол-вом уникальных значений в каждой категории) и нормализованы для обучения базовых моделей - Логистической Регрессии, К Ближайших Соседей, Дерева Решений, а также модели Случайного Леса.')
+st.write('Данные разделены на тренировочный, валидационный и тестовый датасеты в примерном соотношении 60%:20%:20%')
+
+data = data.drop(['pdays', 'poutcome', 'previous'], axis=1)
+
+data = data.replace('unknown', np.nan)
+data = data.dropna(how='any')
+
+X = data.drop(['y', 'duration'], axis=1)
+y = data['y'].apply(lambda x: 0 if x == 'no' else 1)
+
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    test_size=0.2,
+                                                    random_state=42,
+                                                    stratify=y)
+X_train, X_test, y_val, y_val = train_test_split(X_train, y_train,
+                                                    test_size=0.25,
+                                                    random_state=42,
+                                                    stratify=y_train)
+
+cat_cols = X.select_dtypes(include=object).columns
+ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
+
+X_train_cat = ohe.fit_transform(X_train[cat_cols])
+X_val_cat = ohe.transform(X_val[cat_cols])
+X_test_cat  = ohe.transform(X_test[cat_cols])
+
+feature_names = ohe.get_feature_names_out(cat_cols)
+
+X_train_cat_df = pd.DataFrame(X_train_cat, columns=feature_names, index=X_train.index)
+X_val_cat_df = pd.DataFrame(X_val_cat, columns=feature_names, index=X_val.index)
+X_test_cat_df  = pd.DataFrame(X_test_cat, columns=feature_names, index=X_test.index)
+
+X_train_ohe = pd.concat((X_train.drop(cat_cols, axis=1), X_train_cat_df), axis=1)
+X_val_ohe = pd.concat((X_val.drop(cat_cols, axis=1), X_val_cat_df), axis=1)
+X_test_ohe = pd.concat((X_test.drop(cat_cols, axis=1), X_test_cat_df), axis=1)
+
+ss = StandardScaler()
+
+X_train_scaled = pd.DataFrame(ss.fit_transform(X_train_ohe), columns=X_train_ohe.columns)
+X_val_scaled = pd.DataFrame(ss.transform(X_val_ohe), columns=X_val_ohe.columns)
+X_test_scaled =  pd.DataFrame(ss.transform(X_test_ohe), columns=X_test_ohe.columns)
+
+models = {
+    'LogisticRegression': LogisticRegression(),
+    'KNeighborsClassifier': KNeighborsClassifier(),
+    'DecisionTreeClassifier': DecisionTreeClassifier()
+}
+
+res = {}
+
+for name, model in models.items():
+    res[name] = {}
+    model.fit(X_train_scaled, y_train)
+    train_proba = model.predict_proba(X_train_scaled)
+    val_proba = model.predict_proba(X_val_scaled)
+
+    train_roc_auc = roc_auc_score(y_train, train_proba[:, 1])
+    val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
+
+    res[name]['Train ROC AUC'] = train_roc_auc
+    res[name]['Validation ROC AUC'] = val_roc_auc
+    res[name]['Train-Val Difference'] = train_roc_auc - val_roc_auc
+
+MODELS_METRICS = pd.DataFrame(res).T
+
+from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier()
+rf.fit(X_train_scaled, y_train)
+
+res = {
+    'RandomForrest': {}
+}
+
+train_proba = rf.predict_proba(X_train_scaled)
+val_proba = rf.predict_proba(X_val_scaled)
+
+train_roc_auc = roc_auc_score(y_train, train_proba[:, 1])
+val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
+
+res['RandomForrest']['Train ROC AUC'] = train_roc_auc
+res['RandomForrest']['Val ROC AUC'] = val_roc_auc
+res['RandomForrest']['Train-Val Difference'] = train_roc_auc - val_roc_auc
+MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
+
+st.header('Предобработка')
+st.dataframe(MODELS_METRICS, use_container_width=True)
