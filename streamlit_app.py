@@ -24,7 +24,6 @@ st.sidebar.markdown('''
 # Разделы
 - [Размер датасета](#razmer-dataseta)
 - [Случайные 10 строк](#sluchaynye-10-strok)
-- [Визуализация](#vizualizatsiya)
 ''', unsafe_allow_html=True)
 
 # - [Метрики модели](#metriki-modeli)
