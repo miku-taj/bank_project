@@ -107,7 +107,7 @@ fig1.update_layout(
 )
 
 st.plotly_chart(fig1, use_container_width=True)
-st.write(f"Нет видимой связи между возрастом и фактом оформления кредита. Кроме того, корреляция близка к 0 ({round(data['age'].corr(y), 3)}).")
+st.write(f"Нет видимой связи между возрастом и фактом оформления кредита. Кроме того, корреляция близка к 0 (", round(data['age'].corr(y), 3), ")")
 
 # Figure: job 
 fig1 = px.histogram(
