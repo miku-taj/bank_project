@@ -24,6 +24,8 @@ st.sidebar.markdown('''
 # Разделы
 - [Размер датасета](#razmer-dataseta)
 - [Случайные 10 строк](#sluchaynye-10-strok)
+- [Описание набора данных](##opisanie-nabora-dannykh)
+- [Визуализация](#vizualizatsiya)
 ''', unsafe_allow_html=True)
 
 # - [Метрики модели](#metriki-modeli)
@@ -87,8 +89,26 @@ st.plotly_chart(fig, use_container_width=False)
 st.write('Классы распределены неравномерно.')
 
 st.subheader('Демография клиентов, оформивших и не оформивших займ')
+# Figure: age 
+fig1 = px.histogram(
+    data, 
+    x="age", 
+    color="y", 
+    barmode="stack",
+    color_discrete_sequence=palette,
+    text_auto=True,
+    height=400,
+)
+fig1.update_layout(
+    title="Сравнение числа клиентов и вкладчиков в разрезе возраста",
+    xaxis_title="",
+    yaxis_title="",
+    showlegend=True
+)
 
-# Figure 1: job 
+st.plotly_chart(fig1, use_container_width=True)
+
+# Figure: job 
 fig1 = px.histogram(
     data, 
     y="job", 
@@ -105,7 +125,7 @@ fig1.update_layout(
     showlegend=True
 )
 
-# --- Figure 2: marital ---
+# Figure: marital
 fig2 = px.histogram(
     data,
     y="marital",
@@ -122,7 +142,7 @@ fig2.update_layout(
     showlegend=False
 )
 
-# --- Figure 3: education ---
+# Figure: education
 fig3 = px.histogram(
     data,
     y="education",
