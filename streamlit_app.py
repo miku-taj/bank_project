@@ -11,7 +11,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 from catboost import CatBoostClassifier, Pool
 import streamlit as st
-import plotly.express
+import plotly.express as px
 
 st.set_page_config(page_title="Модель классификации вкладчиков банка", layout="wide")
 st.title("Классификация потенциальных вкладчиков")
