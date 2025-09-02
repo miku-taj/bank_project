@@ -107,7 +107,7 @@ fig1.update_layout(
 )
 
 st.plotly_chart(fig1, use_container_width=True)
-st.write(f"Нет видимой связи между возрастом и фактом оформления кредита. Кроме того, корреляция близка к 0 (", round(data['age'].corr(y), 3), ")")
+st.write(f"Нет видимой связи между возрастом и фактом оформления кредита. Кроме того, корреляция близка к 0 (", round(data['age'].corr(data['y'].apply(lambda x: 0 if x == 'no' else 1)), 3), ")")
 
 # Figure: job 
 fig1 = px.histogram(
@@ -334,7 +334,7 @@ data = data.replace('unknown', np.nan)
 data = data.dropna(how='any')
 
 X = data.drop(['y', 'duration'], axis=1)
-y = data['y'].apply(lambda x: 0 if x == 'no' else 1)
+y = data['y']
 
 
 from sklearn.model_selection import train_test_split
