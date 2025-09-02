@@ -34,7 +34,7 @@ sns.countplot(data=data, x='y', hue='y', alpha=1.0, stat="percent")
 plt.ylabel('Процент клиентов')
 plt.xlabel('Оформили займ')
 
-st.pyplot(fig, use_container_width=True)
+st.pyplot(fig)
 
 st.write('Классы распределены неравномерно.')
 
