@@ -80,10 +80,6 @@ st.subheader('Демография клиентов, оформивших и н�
 
 # st.pyplot(fig, use_container_width=True)
 
-import plotly.express as px
-import plotly.graph_objects as go
-import streamlit as st
-
 # --- Figure 1: job ---
 fig1 = px.histogram(
     data, 
@@ -131,13 +127,12 @@ fig3.update_layout(
     yaxis_title="",
     showlegend=False
 )
-
+st.plotly_chart(fig1, use_container_width=True)
 # --- Display in Streamlit using columns ---
 col1, col2 = st.columns([2, 1])  # first plot wider
 with col1:
-    st.plotly_chart(fig1, use_container_width=True)
-with col2:
     st.plotly_chart(fig2, use_container_width=True)
+with col2:
     st.plotly_chart(fig3, use_container_width=True)
 
 
