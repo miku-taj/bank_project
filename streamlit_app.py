@@ -170,7 +170,7 @@ with col3:
     st.plotly_chart(fig3, use_container_width=True)
 
 
-st.subheader('Коммуникация с клиентами, оформившими и не оформившими займ
+st.subheader('Коммуникация с клиентами, оформившими и не оформившими займ')
 
 
 fig1 = px.histogram(
