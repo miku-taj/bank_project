@@ -26,9 +26,10 @@ st.dataframe(data.sample(10), use_container_width=True)
 
 st.header("Визуализация")
 
+st.subheader('Распределение целевой переменной')
 sns.set_theme(style="whitegrid", palette="Set2", font_scale=0.9)
 
-fig, ax = plt.figure(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 plt.title('Распределение клиентов, \nоформивших и не оформивших займ')
 sns.countplot(data=data, x='y', hue='y', alpha=1.0, stat="percent", ax=ax)
 plt.ylabel('Процент клиентов')
@@ -38,7 +39,8 @@ st.pyplot(fig)
 
 st.write('Классы распределены неравномерно.')
 
-fig = plt.subplots(figsize=(12, 6))
+st.subheader('Демография клиентов, оформивших и не оформивших займ')
+fig = plt.figure(figsize=(12, 6))
 gs = fig.add_gridspec(2, 2, height_ratios=[1.5, 1])
 
 ax1 = fig.add_subplot(gs[0, :2])
@@ -61,6 +63,8 @@ sns.histplot(data=data, y='education', hue='y', multiple='stack', ax=ax3, alpha=
 plt.tight_layout()
 
 st.pyplot(fig, use_container_width=True)
+
+st.subheader('Другие характеристики клиентов, оформивших и не оформивших займ')
 
 fig = plt.figure(figsize=(12, 6))
 gs = fig.add_gridspec(2, 3, height_ratios=[1.5, 1])
@@ -88,6 +92,8 @@ st.pyplot(fig, use_container_width=True)
 
 fig = plt.figure(figsize=(12, 6))
 gs = fig.add_gridspec(2, 3, height_ratios=[1.5, 1])
+
+st.subheader('Коммуникация с клиентами, оформившими и не оформившими займ')
 
 ax1 = fig.add_subplot(gs[0, 0])
 ax1.set_title('Клиенты и вкладчики по типу связи')
