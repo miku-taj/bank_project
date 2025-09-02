@@ -38,7 +38,7 @@ st.pyplot(fig)
 
 st.write('Классы распределены неравномерно.')
 
-fig = plt.figure(figsize=(12, 6))
+fig = plt.subplots(figsize=(12, 6))
 gs = fig.add_gridspec(2, 2, height_ratios=[1.5, 1])
 
 ax1 = fig.add_subplot(gs[0, :2])
