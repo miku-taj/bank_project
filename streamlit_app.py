@@ -304,9 +304,9 @@ def encode_education(x):
         return 14
     if x == 'university.degree':
         return 16 
-
-data['education'] = data['education'].apply(encode_education)
-data['y'] = data['y'].apply(lambda x: 0 if x == 'no' else 1)
+enc_data = data.copy()
+enc_data['education'] = enc_data['education'].apply(encode_education)
+enc_data['y'] = enc_data['y'].apply(lambda x: 0 if x == 'no' else 1)
 
 corr_matrix = data.select_dtypes(include=['int', 'float']).corr()
 
@@ -372,7 +372,7 @@ X_test_ohe = pd.concat((X_test.drop(cat_cols, axis=1), X_test_cat_df), axis=1)
 
 ss = StandardScaler()
 
-X_train1_scaled = pd.DataFrame(ss.fit_transform(X_train_ohe), columns=X_train1_ohe.columns)
+X_train1_scaled = pd.DataFrame(ss.fit_transform(X_train1_ohe), columns=X_train1_ohe.columns)
 X_val_scaled =  pd.DataFrame(ss.transform(X_val_ohe), columns=X_val_ohe.columns)
 X_test_scaled =  pd.DataFrame(ss.transform(X_test_ohe), columns=X_test_ohe.columns)
 
@@ -495,13 +495,68 @@ shap_values = explainer(X_train, y_train)
 
 plt.figure(figsize=(10,6))
 shap.summary_plot(
-    shap_values.values,         # SHAP values array
-    shap_values.data,           # feature data
+    shap_values.values,         
+    shap_values.data,           
     feature_names=shap_values.feature_names,
-    plot_type="dot",            # beeswarm-style plot
+    plot_type="dot",            
     max_display=20,
-    show=False                  # important! prevents SHAP from calling plt.show()
+    show=False                  
 )
-
-# Now Streamlit can display it
 st.pyplot(plt.gcf())
+
+
+st.header('Сделать прогноз')
+
+with st.form("user_input_form"):
+
+    age_input = st.number_input("Возраст (Age)", min_value=int(data['age'].min()), max_value=int(data['age'].max()), value=int(data['Age'].median()), step=1)   
+    job_input = st.selectbox("Профессия (Job)", list(data['job'].value_counts().sort_values(ascending=False).index), index=0)
+    marital_input = st.radio("Семейное положение (Marital)", list(data['marital'].value_counts().sort_values(ascending=False).index))
+    
+    # edu_input = st.selectbox("Уровень образования (Education)", list(data['education'].value_counts().sort_values(ascending=False).index), index=0)
+    
+    # default_input = st.radio("Наличие кредитного дефолта (Default)", list(data['default'].value_counts().sort_values(ascending=False).index))
+    # housing_input = st.radio("Наличие жилищного кредита (Housing)", list(data['housing'].value_counts().sort_values(ascending=False).index))
+    # loan_input = st.radio("Наличие персонального займа (Loan)", list(data['loan'].value_counts().sort_values(ascending=False).index))
+
+    contact_input = st.radio("Тип связи (Contact)", list(data['contact'].value_counts().sort_values(ascending=False).index))
+    month_input = st.selectbox("Месяц последнего контакта (Month)", list(data['month'].value_counts().sort_values(ascending=False).index), index=0)
+    dow_input = st.selectbox("День недели последнего контакта (Day Of Week)", list(data['day_of_week'].value_counts().sort_values(ascending=False).index), index=0)
+
+    campaign_input = st.number_input('Количество контактов в рамках этой кампании с клиентом (campaign)')
+    emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)')
+    cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)')
+    cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)')
+    euribor3m_input = st.number_input('Ставка Euribor 3 месяца, ежедневный показатель (euribor3m)')
+    employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)')
+    
+    submit_button = st.form_submit_button("Предсказать")
+
+    if submit_button:
+        user_input = pd.DataFrame([{
+            'age': age_input,
+            'job': job_input,
+            'marital': marital_input,
+            'contact': contact_input,
+            'month': month_input,
+            'day_of_week': dow_input,
+            'campaign': campaign_input,
+            'emp.var.rate': emp_var_input,
+            'cons.price.idx': cons_price_input,
+            'cons.conf.idx': cons_conf_input,
+            'euribor3m': euribor3m_input,
+            'nr.employed': employed_input
+        }])
+        # user_input_encoded = encoder.transform(user_input)
+        # for col in ['Age', 'SibSp', 'Parch', 'Fare']:
+        #     user_input_encoded[col] = user_input[col].values
+        # user_input_scaled = scaler.transform(user_input_encoded)
+        
+        # with st.expander('Просмотреть результат:'):
+        #     pred = model.predict(user_input_scaled)[0]
+        #     if pred == 1:
+        #         st.write(f"**Поздравляем, этот человек выжил на Титанике с вероятностью {model.predict_proba(user_input_scaled)[0][1]}.**" )
+        #     else:
+        #         st.write(f"**Сожалеем, этот человек погиб на Титанике с вероятностью {model.predict_proba(user_input_scaled)[0][0]}.**")
+
+
