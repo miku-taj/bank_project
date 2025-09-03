@@ -514,6 +514,9 @@ st.write("Исходя из важности признаков и приним�
 
 X_train1, X_val, X_test = X_train1.drop(['default','loan','housing','education'], axis=1), X_val.drop(['default','loan','housing','education'], axis=1), X_test.drop(['default','loan','housing','education'], axis=1)
 
+cat_cols = X_test.select_dtypes(include=object).columns
+cat_cols_id = [X_test.columns.get_loc(col) for col in cat_cols]
+
 catboost_model.fit(
     X_train1, y_train1, 
     cat_features=cat_cols_id,
