@@ -503,9 +503,10 @@ shap.summary_plot(
     max_display=20,
     show=False                  
 )
+plt.title('SHAP значения признаков')
 
 
-col1, col2, col3 = st.columns([1, 1, 1]) 
+col1, col2 = st.columns([1, 1]) 
 with col1:
     st.plotly_chart(fig)
 with col2:
@@ -529,12 +530,17 @@ with st.form("user_input_form"):
     month_input = st.selectbox("Месяц последнего контакта (Month)", list(data['month'].value_counts().sort_values(ascending=False).index), index=0)
     dow_input = st.selectbox("День недели последнего контакта (Day Of Week)", list(data['day_of_week'].value_counts().sort_values(ascending=False).index), index=0)
 
-    campaign_input = st.number_input('Количество контактов в рамках этой кампании с клиентом (campaign)')
-    emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)')
+    col1, col2, col3 = st.columns([1, 1, 1]) 
+    with col1:
+      campaign_input = st.number_input('Количество контактов в рамках этой кампании с клиентом (campaign)')
+      euribor3m_input = st.number_input('Ставка Euribor 3 месяца, ежедневный показатель (euribor3m)')
+    with col2:
+      emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)')
+      employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)')
+    with col3:
     cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)')
     cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)')
-    euribor3m_input = st.number_input('Ставка Euribor 3 месяца, ежедневный показатель (euribor3m)')
-    employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)')
+    
     
     submit_button = st.form_submit_button("Предсказать")
 
