@@ -437,7 +437,9 @@ catboost_model = CatBoostClassifier(
 
 catboost_model.fit(
     X_train1, y_train1, 
-    cat_features=cat_cols_id
+    cat_features=cat_cols_id,
+    eval_set=(X_val, y_val),
+    plot=True
 )
 
 st.header('Отбор признаков')
