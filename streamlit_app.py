@@ -615,7 +615,7 @@ with st.form("user_input_form"):
               title="SHAP значения для записи",
               height=500
             )
-            st.plotly__chart(fig)
+            st.plotly_chart(fig)
 
 
 
