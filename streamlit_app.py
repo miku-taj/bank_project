@@ -430,19 +430,14 @@ catboost_model = CatBoostClassifier(
     depth=6,
     learning_rate=0.05, 
     l2_leaf_reg=5, 
-    eval_metric='AUC', 
-    od_type='Iter', 
-    od_wait=100, 
+    eval_metric='AUC',
     verbose=100, 
     random_state=42, 
-    loss_function='Logloss'	
 )
 
 catboost_model.fit(
     X_train1, y_train1, 
-    cat_features=cat_cols_id,
-    eval_set=(X_val, y_val),
-    plot=True
+    cat_features=cat_cols_id
 )
 
 st.header('Отбор признаков')
