@@ -191,7 +191,6 @@ fig1.update_layout(
     showlegend=True
 )
 
-# --- Figure 2: marital ---
 fig2 = px.histogram(
     data,
     y="default",
@@ -308,10 +307,10 @@ def encode_education(x):
     if x == 'university.degree':
         return 16 
 enc_data = data.copy()
-enc_data['education'] = enc_data['education'].apply(encode_education)
-enc_data['y'] = enc_data['y'].apply(lambda x: 0 if x == 'no' else 1)
+enc_data['education'] = data['education'].apply(encode_education)
+enc_data['y'] = data['y'].apply(lambda x: 0 if x == 'no' else 1)
 
-corr_matrix = data.select_dtypes(include=['int', 'float']).corr()
+corr_matrix = enc_data.select_dtypes(include=['int', 'float']).corr()
 
 fig = px.imshow(
     corr_matrix,
