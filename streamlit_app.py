@@ -451,7 +451,6 @@ idx = np.argsort(importances)[::-1]
 sorted_importances = np.array(importances)[idx]
 sorted_features = [feature_names[i] for i in idx]
 
-# Create interactive bar chart
 fig = px.bar(
     x=sorted_features,
     y=sorted_importances,
@@ -460,13 +459,14 @@ fig = px.bar(
     height=400
 )
 
-# Rotate x-axis labels
-fig.update_layout(xaxis_tickangle=90)
+# fig.update_layout(xaxis_tickangle=90)
 st.plotly_chart(fig, use_container_width=False)
 
 import shap
 explainer = shap.TreeExplainer(model)
 shap_values = explainer(X_train, y_train)
-shap.plots.beeswarm(shap_values, max_display=20)
+
+fig, ax = plt.subplots(figsize=(10,6))
+shap.plots.beeswarm(shap_values, max_display=20, show=False)
 plt.tight_layout()
-st.pyplot(plt.gcf())
+st.pyplot(fig)
