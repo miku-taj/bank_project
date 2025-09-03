@@ -344,7 +344,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                     test_size=0.2,
                                                     random_state=42,
                                                     stratify=y)
-X_train, X_val, y_val, y_val = train_test_split(X_train, y_train,
+X_train1, X_val, y_train1, y_val = train_test_split(X_train, y_train,
                                                     test_size=0.25,
                                                     random_state=42,
                                                     stratify=y_train)
@@ -419,5 +419,51 @@ res['RandomForrest']['Train-Test Difference'] = train_roc_auc - test_roc_auc
 
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
 
-st.header('Предобработка')
+st.header('Метрики бейзлайн моделей')
 st.dataframe(MODELS_METRICS, use_container_width=True)
+
+cat_cols = X.select_dtypes(include=object).columns
+cat_cols_id = [X.columns.get_loc(col) for col in cat_cols]
+
+catboost_model = CatBoostClassifier(
+    iterations=856,
+    depth=6,
+    learning_rate=0.05, 
+    l2_leaf_reg=5, 
+    eval_metric='AUC', 
+    od_type='Iter', 
+    od_wait=100, 
+    verbose=100, 
+    random_state=42, 
+    loss_function='Logloss'	
+)
+
+catboost_model.fit(
+    X_train1, y_train1, 
+    cat_features=cat_cols_id,
+    eval_set=(X_val, y_val),
+    plot=True
+)
+
+st.header('Отбор признаков')
+st.subheader('Важность признаков')
+importances = catboost_model.get_feature_importance(type="FeatureImportance")
+feature_names = list(X_train.columns)
+
+idx = np.argsort(importances)[::-1]
+sorted_importances = np.array(importances)[idx]
+sorted_features = [feature_names[i] for i in idx]
+
+# Create interactive bar chart
+fig = px.bar(
+    x=sorted_features,
+    y=sorted_importances,
+    labels={'x': 'Features', 'y': 'Importance'},
+    title="CatBoost Feature Importances",
+    height=400
+)
+
+# Rotate x-axis labels
+fig.update_layout(xaxis_tickangle=90)
+st.plotly_chart(fig, use_container_width=False)
+
