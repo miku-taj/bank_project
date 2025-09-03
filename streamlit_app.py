@@ -461,6 +461,9 @@ train1_roc_auc = roc_auc_score(y_train1, train1_proba[:, 1])
 val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
 test_roc_auc = roc_auc_score(y_test, test_proba[:, 1])
 
+res = {
+  'Catboost': {}
+}
 res['Catboost']['Train ROC AUC'] = train1_roc_auc
 res['Catboost']['Val ROC AUC'] = val_roc_auc
 res['Catboost']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
