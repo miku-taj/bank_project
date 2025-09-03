@@ -352,24 +352,22 @@ X_train, X_val, y_val, y_val = train_test_split(X_train, y_train,
 cat_cols = X.select_dtypes(include=object).columns
 ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
 
+ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
+
 X_train_cat = ohe.fit_transform(X_train[cat_cols])
-X_val_cat = ohe.transform(X_val[cat_cols])
 X_test_cat  = ohe.transform(X_test[cat_cols])
 
 feature_names = ohe.get_feature_names_out(cat_cols)
 
 X_train_cat_df = pd.DataFrame(X_train_cat, columns=feature_names, index=X_train.index)
-X_val_cat_df = pd.DataFrame(X_val_cat, columns=feature_names, index=X_val.index)
 X_test_cat_df  = pd.DataFrame(X_test_cat, columns=feature_names, index=X_test.index)
 
 X_train_ohe = pd.concat((X_train.drop(cat_cols, axis=1), X_train_cat_df), axis=1)
-X_val_ohe = pd.concat((X_val.drop(cat_cols, axis=1), X_val_cat_df), axis=1)
 X_test_ohe = pd.concat((X_test.drop(cat_cols, axis=1), X_test_cat_df), axis=1)
 
 ss = StandardScaler()
 
 X_train_scaled = pd.DataFrame(ss.fit_transform(X_train_ohe), columns=X_train_ohe.columns)
-X_val_scaled = pd.DataFrame(ss.transform(X_val_ohe), columns=X_val_ohe.columns)
 X_test_scaled =  pd.DataFrame(ss.transform(X_test_ohe), columns=X_test_ohe.columns)
 
 models = {
@@ -378,22 +376,27 @@ models = {
     'DecisionTreeClassifier': DecisionTreeClassifier()
 }
 
+
 res = {}
 
 for name, model in models.items():
+
     res[name] = {}
+
     model.fit(X_train_scaled, y_train)
     train_proba = model.predict_proba(X_train_scaled)
-    val_proba = model.predict_proba(X_val_scaled)
+    test_proba = model.predict_proba(X_test_scaled)
 
     train_roc_auc = roc_auc_score(y_train, train_proba[:, 1])
-    val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
+    test_roc_auc = roc_auc_score(y_test, test_proba[:, 1])
 
     res[name]['Train ROC AUC'] = train_roc_auc
-    res[name]['Validation ROC AUC'] = val_roc_auc
-    res[name]['Train-Val Difference'] = train_roc_auc - val_roc_auc
+    res[name]['Test ROC AUC'] = test_roc_auc
+    res[name]['Train-Val Difference'] = train_roc_auc - test_roc_auc
 
 MODELS_METRICS = pd.DataFrame(res).T
+
+from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -405,14 +408,15 @@ res = {
 }
 
 train_proba = rf.predict_proba(X_train_scaled)
-val_proba = rf.predict_proba(X_val_scaled)
+test_proba = rf.predict_proba(X_test_scaled)
 
 train_roc_auc = roc_auc_score(y_train, train_proba[:, 1])
-val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
+test_roc_auc = roc_auc_score(y_test, test_proba[:, 1])
 
 res['RandomForrest']['Train ROC AUC'] = train_roc_auc
-res['RandomForrest']['Val ROC AUC'] = val_roc_auc
-res['RandomForrest']['Train-Val Difference'] = train_roc_auc - val_roc_auc
+res['RandomForrest']['Test ROC AUC'] = test_roc_auc
+res['RandomForrest']['Train-Test Difference'] = train_roc_auc - test_roc_auc
+
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
 
 st.header('Предобработка')
