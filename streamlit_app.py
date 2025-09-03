@@ -604,8 +604,8 @@ with st.form("user_input_form"):
             df_plot = df_plot.reindex(df_plot.shap_value.abs().sort_values(ascending=True).index)
             fig = px.bar(
               df_plot,
-              x="shap значение",
-              y="признак",
+              x="shap_value",
+              y="feature",
               orientation="h",
               color="feature_value",                 
               color_continuous_scale="RdBu",
