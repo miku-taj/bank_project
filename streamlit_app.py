@@ -28,7 +28,8 @@ st.sidebar.markdown('''
 - [Описание набора данных](##opisanie-nabora-dannykh)
 - [Визуализация](#vizualizatsiya)
 - [Предобработка](#predobrabotka)
-- [Метрики бейзлайн моделей](#metriki-beyzlayn-modeley)
+- [Метрики бейзлайн моделей](#metriki-beyzlayn-modeley
+- [Сделать прогноз](#sdelat-prognoz)
 ''', unsafe_allow_html=True)
 
 # - [Метрики модели](#metriki-modeli)
