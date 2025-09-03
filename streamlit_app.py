@@ -463,12 +463,12 @@ val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
 test_roc_auc = roc_auc_score(y_test, test_proba[:, 1])
 
 res = {
-  'Catboost': {}
+  'Catboost Full': {}
 }
-res['Catboost']['Train ROC AUC'] = train1_roc_auc
-res['Catboost']['Val ROC AUC'] = val_roc_auc
-res['Catboost']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
-res['Catboost']['Test ROC AUC'] = test_roc_auc
+res['Catboost Full']['Train ROC AUC'] = train1_roc_auc
+res['Catboost Full']['Val ROC AUC'] = val_roc_auc
+res['Catboost Full']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
+res['Catboost Full']['Test ROC AUC'] = test_roc_auc
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
 
 
@@ -510,7 +510,7 @@ with col1:
     st.plotly_chart(fig)
 with col2:
     st.pyplot(plt.gcf())
-
+st.write("Исходя из важности признаков и принимая во внимание SHAP значения, были удалены признаки default, loan, housing, education.")
 st.header('Сделать прогноз')
 
 with st.form("user_input_form"):
@@ -525,16 +525,39 @@ with st.form("user_input_form"):
 
     col1, col2, col3 = st.columns([1, 1, 1]) 
     with col1:
-      campaign_input = st.number_input('Количество контактов в рамках этой кампании с клиентом (campaign)')
-      euribor3m_input = st.number_input('Ставка Euribor 3 месяца, ежедневный показатель (euribor3m)')
+      campaign_input = st.number_input('Количество контактов в рамках этой кампании с клиентом (campaign)', value=int(data['campaign'].median()))
+      euribor3m_input = st.number_input('Ставка Euribor 3 месяца, ежедневный показатель (euribor3m)', value=float(data['euribor3m'].median()))
     with col2:
-      emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)')
-      employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)')
+      emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)', value=float(data['emp.var.rate'].median()))
+      employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)', value=float(data['nr.employed'].median()))
     with col3:
-      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)')
-      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)')
-    
-    
+      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', min_value=90, max_value=300, value=float(data['cons.price.idx'].median()))
+      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)'), min_value=30, max_value=200, value=float(data['cons.conf.idx'].median()))
+
+X_train1, X_val, X_test = X_train1.drop(['default','loan','housing','education'], axis=1), X_val.drop(['default','loan','housing','education'], axis=1), X_test.drop(['default','loan','housing','education'], axis=1)
+
+catboost_model.fit(
+    X_train1, y_train1, 
+    cat_features=cat_cols_id,
+    eval_set=(X_val, y_val)
+)
+
+train1_proba = catboost_model.predict_proba(X_train1)
+val_proba = catboost_model.predict_proba(X_val)
+test_proba = catboost_model.predict_proba(X_test)
+
+train1_roc_auc = roc_auc_score(y_train1, train1_proba[:, 1])
+val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
+test_roc_auc = roc_auc_score(y_test, test_proba[:, 1])
+
+res['Catboost'] = {}
+res['Catboost']['Train ROC AUC'] = train1_roc_auc
+res['Catboost']['Val ROC AUC'] = val_roc_auc
+res['Catboost']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
+res['Catboost']['Test ROC AUC'] = test_roc_auc
+MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
+st.dataframe(MODELS_METRICS)
+  
     submit_button = st.form_submit_button("Предсказать")
 
     if submit_button:
@@ -552,15 +575,13 @@ with st.form("user_input_form"):
             'euribor3m': euribor3m_input,
             'nr.employed': employed_input
         }])
-        # for col in nume_cols:
-        #     user_input_encoded[col] = user_input[col].values
-        # user_input_scaled = scaler.transform(user_input_encoded)
-        
-        # with st.expander('Просмотреть результат:'):
-        #     pred = model.predict(user_input_scaled)[0]
-        #     if pred == 1:
-        #         st.write(f"**Поздравляем, этот человек выжил на Титанике с вероятностью {model.predict_proba(user_input_scaled)[0][1]}.**" )
-        #     else:
-        #         st.write(f"**Сожалеем, этот человек погиб на Титанике с вероятностью {model.predict_proba(user_input_scaled)[0][0]}.**")
+
+        user_input = user_input[X_test.columns]
+        with st.expander('Просмотреть результат:'):
+            pred = catboost_model.predict(user_input)[0]
+            if pred == 1:
+                st.write(f"**Вероятно, что клиент оформит депозит в рамках текущей кампании. Вероятность равна {model.predict_proba(user_input_scaled)[0][1]}.**" )
+            else:
+                st.write(f"**Вероятно, что клиент не оформит депозит в рамках текущей кампании {model.predict_proba(user_input_scaled)[0][0]}.**")
 
 
