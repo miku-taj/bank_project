@@ -26,6 +26,8 @@ st.sidebar.markdown('''
 - [Случайные 10 строк](#sluchaynye-10-strok)
 - [Описание набора данных](##opisanie-nabora-dannykh)
 - [Визуализация](#vizualizatsiya)
+- [Предобработка](#predobrabotka)
+- [Метрики бейзлайн моделей](#metriki-beyzlayn-modeley)
 ''', unsafe_allow_html=True)
 
 # - [Метрики модели](#metriki-modeli)
@@ -308,7 +310,6 @@ data['y'] = data['y'].apply(lambda x: 0 if x == 'no' else 1)
 
 corr_matrix = data.select_dtypes(include=['int', 'float']).corr()
 
-# Plot interactive heatmap
 fig = px.imshow(
     corr_matrix,
     text_auto=True,          
@@ -454,7 +455,7 @@ sorted_features = [feature_names[i] for i in idx]
 fig = px.bar(
     x=sorted_features,
     y=sorted_importances,
-    labels={'x': 'Features', 'y': 'Importance'},
+    labels={'x': 'Признак', 'y': 'Важность'},
     title="CatBoost Feature Importances",
     height=400
 )
