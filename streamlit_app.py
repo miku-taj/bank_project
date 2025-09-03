@@ -491,7 +491,7 @@ fig = px.bar(
 
 # fig.update_layout(xaxis_tickangle=90)
 
-explainer = shap.TreeExplainer(model)
+explainer = shap.TreeExplainer(catboost_model)
 shap_values = explainer(X_train, y_train)
 
 plt.figure(figsize=(10,6))
