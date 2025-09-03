@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import re
+import shap
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -481,18 +482,16 @@ sorted_importances = np.array(importances)[idx]
 sorted_features = [feature_names[i] for i in idx]
 
 fig = px.bar(
-    x=sorted_features,
-    y=sorted_importances,
-    labels={'x': 'Признак', 'y': 'Важность'},
+    y=sorted_features,
+    x=sorted_importances,
+    labels={'y': 'Признак', 'x': 'Важность'},
     title="CatBoost Feature Importances",
     height=400
 )
 
 # fig.update_layout(xaxis_tickangle=90)
-st.plotly_chart(fig, use_container_width=False)
 
-import shap
-explainer = shap.TreeExplainer(catboost_model)
+explainer = shap.TreeExplainer(model)
 shap_values = explainer(X_train, y_train)
 
 plt.figure(figsize=(10,6))
@@ -504,14 +503,19 @@ shap.summary_plot(
     max_display=20,
     show=False                  
 )
-st.pyplot(plt.gcf())
 
+
+col1, col2, col3 = st.columns([1, 1, 1]) 
+with col1:
+    st.plotly_chart(fig)
+with col2:
+    st.pyplot(plt.gcf())
 
 st.header('Сделать прогноз')
 
 with st.form("user_input_form"):
 
-    age_input = st.number_input("Возраст (Age)", min_value=int(data['age'].min()), max_value=int(data['age'].max()), value=int(data['Age'].median()), step=1)   
+    age_input = st.number_input("Возраст (Age)", min_value=int(data['age'].min()), max_value=int(data['age'].max()), value=int(data['age'].median()), step=1)   
     job_input = st.selectbox("Профессия (Job)", list(data['job'].value_counts().sort_values(ascending=False).index), index=0)
     marital_input = st.radio("Семейное положение (Marital)", list(data['marital'].value_counts().sort_values(ascending=False).index))
     
