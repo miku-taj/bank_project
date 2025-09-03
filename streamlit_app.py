@@ -389,7 +389,7 @@ for name, model in models.items():
 
     res[name] = {}
 
-    model.fit(X_train1_scaled, y_train)
+    model.fit(X_train1_scaled, y_train1)
     train1_proba = model.predict_proba(X_train1_scaled)
     val_proba = model.predict_proba(X_val_scaled)
     test_proba = model.predict_proba(X_test_scaled)
@@ -410,7 +410,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import RandomForestClassifier
 
 rf = RandomForestClassifier()
-rf.fit(X_train1_scaled, y_train)
+rf.fit(X_train1_scaled, y_train1)
 
 res = {
     'RandomForrest': {}
