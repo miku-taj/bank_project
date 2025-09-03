@@ -318,9 +318,9 @@ fig = px.imshow(
 )
 
 fig.update_layout(
-    title="Correlation Heatmap",
-    xaxis_title="Features",
-    yaxis_title="Features"
+    title="График корреляции",
+    xaxis_title="Признаки",
+    yaxis_title="Признаки"
 )
 st.plotly_chart(fig, use_container_width=False)
 
@@ -466,7 +466,15 @@ import shap
 explainer = shap.TreeExplainer(model)
 shap_values = explainer(X_train, y_train)
 
-fig, ax = plt.subplots(figsize=(10,6))
-shap.plots.beeswarm(shap_values, max_display=20, show=False)
-plt.tight_layout()
-st.pyplot(fig)
+plt.figure(figsize=(10,6))
+shap.summary_plot(
+    shap_values.values,         # SHAP values array
+    shap_values.data,           # feature data
+    feature_names=shap_values.feature_names,
+    plot_type="dot",            # beeswarm-style plot
+    max_display=20,
+    show=False                  # important! prevents SHAP from calling plt.show()
+)
+
+# Now Streamlit can display it
+st.pyplot(plt.gcf())
