@@ -588,9 +588,9 @@ with st.form("user_input_form"):
         with st.expander('Просмотреть результат:'):
             pred = catboost_model.predict(user_input)[0]
             if pred == 1:
-                st.write(f"**Вероятно, что клиент оформит депозит в рамках текущей кампании. Вероятность равна {model.predict_proba(user_input)[0][1]}.**" )
+                st.write(f"**Вероятно, что клиент оформит депозит в рамках текущей кампании. Вероятность равна {catboost_model.predict_proba(user_input)[0][1]}.**" )
             else:
-                st.write(f"**Вероятно, что клиент не оформит депозит в рамках текущей кампании {model.predict_proba(user_input)[0][0]}.**")
+                st.write(f"**Вероятно, что клиент не оформит депозит в рамках текущей кампании {catboost_model.predict_proba(user_input)[0][0]}.**")
             
             shap_values_row = explainer(user_input).values[0]   
             features_row = user_input.iloc[0]                  
