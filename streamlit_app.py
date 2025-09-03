@@ -492,7 +492,7 @@ fig = px.bar(
 st.plotly_chart(fig, use_container_width=False)
 
 import shap
-explainer = shap.TreeExplainer(model)
+explainer = shap.TreeExplainer(catboost_model)
 shap_values = explainer(X_train, y_train)
 
 plt.figure(figsize=(10,6))
