@@ -469,6 +469,7 @@ res['Catboost Full']['Train ROC AUC'] = train1_roc_auc
 res['Catboost Full']['Val ROC AUC'] = val_roc_auc
 res['Catboost Full']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
 res['Catboost Full']['Test ROC AUC'] = test_roc_auc
+
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
 
 
@@ -488,7 +489,6 @@ fig = px.bar(
     title="CatBoost Feature Importances"
 )
 
-# fig.update_layout(xaxis_tickangle=90)
 
 explainer = shap.TreeExplainer(catboost_model)
 shap_values = explainer(X_train, y_train)
@@ -561,10 +561,8 @@ with st.form("user_input_form"):
       emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)', value=float(data['emp.var.rate'].median()))
       employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)', value=float(data['nr.employed'].median()))
     with col3:
-      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', min_value=90.0, max_value=300.0, value=float(data['cons.price.idx'].median()))
-      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)', min_value=30.0, max_value=200.0, value=float(data['cons.conf.idx'].median()))
-
-  
+      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', value=float(data['cons.price.idx'].median()))
+      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)', value=float(data['cons.conf.idx'].median()))
     submit_button = st.form_submit_button("Предсказать")
 
     if submit_button:
