@@ -584,12 +584,13 @@ with st.form("user_input_form"):
         }])
 
         user_input = user_input[X_test.columns]
+        st.dataframe(user_input)
         with st.expander('Просмотреть результат:'):
             pred = catboost_model.predict(user_input)[0]
             if pred == 1:
-                st.write(f"**Вероятно, что клиент оформит депозит в рамках текущей кампании. Вероятность равна {model.predict_proba(user_input_scaled)[0][1]}.**" )
+                st.write(f"**Вероятно, что клиент оформит депозит в рамках текущей кампании. Вероятность равна {model.predict_proba(user_input)[0][1]}.**" )
             else:
-                st.write(f"**Вероятно, что клиент не оформит депозит в рамках текущей кампании {model.predict_proba(user_input_scaled)[0][0]}.**")
+                st.write(f"**Вероятно, что клиент не оформит депозит в рамках текущей кампании {model.predict_proba(user_input)[0][0]}.**")
             
             shap_values_row = explainer(user_input).values[0]   
             features_row = user_input.iloc[0]                  
