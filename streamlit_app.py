@@ -539,6 +539,8 @@ res['Catboost']['Test ROC AUC'] = test_roc_auc
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
 st.dataframe(MODELS_METRICS)
 
+explainer = shap.TreeExplainer(catboost_model)
+
 st.header('Сделать прогноз')
 
 with st.form("user_input_form"):
@@ -559,8 +561,8 @@ with st.form("user_input_form"):
       emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)', value=float(data['emp.var.rate'].median()))
       employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)', value=float(data['nr.employed'].median()))
     with col3:
-      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', min_value=90, max_value=300, value=float(data['cons.price.idx'].median()))
-      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)', min_value=30, max_value=200, value=float(data['cons.conf.idx'].median()))
+      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', min_value=90.0, max_value=300.0, value=float(data['cons.price.idx'].median()))
+      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)', min_value=30.0, max_value=200.0, value=float(data['cons.conf.idx'].median()))
 
   
     submit_button = st.form_submit_button("Предсказать")
@@ -588,5 +590,27 @@ with st.form("user_input_form"):
                 st.write(f"**Вероятно, что клиент оформит депозит в рамках текущей кампании. Вероятность равна {model.predict_proba(user_input_scaled)[0][1]}.**" )
             else:
                 st.write(f"**Вероятно, что клиент не оформит депозит в рамках текущей кампании {model.predict_proba(user_input_scaled)[0][0]}.**")
+            
+            shap_values_row = explainer(user_input).values[0]   
+            features_row = user_input.iloc[0]                  
+
+            df_plot = pd.DataFrame({
+              "feature": X_test.columns,
+              "shap_value": shap_values_row,
+              "feature_value": features_row.values
+            })
+
+            df_plot = df_plot.reindex(df_plot.shap_value.abs().sort_values(ascending=True).index)
+            fig = px.bar(
+              df_plot,
+              x="shap значение",
+              y="признак",
+              orientation="h",
+              color="feature_value",                 
+              color_continuous_scale="RdBu",
+              title="SHAP значения для записи",
+              height=500
+            )
+
 
 
