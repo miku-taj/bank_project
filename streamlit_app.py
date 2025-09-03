@@ -510,7 +510,7 @@ with col1:
     st.plotly_chart(fig)
 with col2:
     st.pyplot(plt.gcf())
-st.write("Исходя из важности признаков и принимая во внимание SHAP значения, были удалены признаки default, loan, housing, education.")
+st.write("Исходя из важности признаков и принимая во внимание SHAP значения, были удалены признаки default, loan, housing.")
 
 X_train1, X_val, X_test = X_train1.drop(['default','loan','housing','education'], axis=1), X_val.drop(['default','loan','housing','education'], axis=1), X_test.drop(['default','loan','housing','education'], axis=1)
 
