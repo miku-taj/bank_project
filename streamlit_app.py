@@ -473,7 +473,7 @@ res['Catboost Full']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
 res['Catboost Full']['Test ROC AUC'] = test_roc_auc
 
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
-
+st.dataframe(MODELS_METRICS)
 
 st.header('Отбор признаков')
 st.subheader('Важность признаков')
