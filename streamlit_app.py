@@ -517,15 +517,9 @@ st.header('Сделать прогноз')
 with st.form("user_input_form"):
 
     age_input = st.number_input("Возраст (Age)", min_value=int(data['age'].min()), max_value=int(data['age'].max()), value=int(data['age'].median()), step=1)   
-    job_input = st.selectbox("Профессия (Job)", list(data['job'].value_counts().sort_values(ascending=False).index), index=0)
     marital_input = st.radio("Семейное положение (Marital)", list(data['marital'].value_counts().sort_values(ascending=False).index))
-    
-    # edu_input = st.selectbox("Уровень образования (Education)", list(data['education'].value_counts().sort_values(ascending=False).index), index=0)
-    
-    # default_input = st.radio("Наличие кредитного дефолта (Default)", list(data['default'].value_counts().sort_values(ascending=False).index))
-    # housing_input = st.radio("Наличие жилищного кредита (Housing)", list(data['housing'].value_counts().sort_values(ascending=False).index))
-    # loan_input = st.radio("Наличие персонального займа (Loan)", list(data['loan'].value_counts().sort_values(ascending=False).index))
-
+    job_input = st.selectbox("Профессия (Job)", list(data['job'].value_counts().sort_values(ascending=False).index), index=0)
+  
     contact_input = st.radio("Тип связи (Contact)", list(data['contact'].value_counts().sort_values(ascending=False).index))
     month_input = st.selectbox("Месяц последнего контакта (Month)", list(data['month'].value_counts().sort_values(ascending=False).index), index=0)
     dow_input = st.selectbox("День недели последнего контакта (Day Of Week)", list(data['day_of_week'].value_counts().sort_values(ascending=False).index), index=0)
@@ -538,8 +532,8 @@ with st.form("user_input_form"):
       emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)')
       employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)')
     with col3:
-    cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)')
-    cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)')
+      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)')
+      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)')
     
     
     submit_button = st.form_submit_button("Предсказать")
