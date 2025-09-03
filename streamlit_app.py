@@ -464,3 +464,9 @@ fig = px.bar(
 fig.update_layout(xaxis_tickangle=90)
 st.plotly_chart(fig, use_container_width=False)
 
+import shap
+explainer = shap.TreeExplainer(model)
+shap_values = explainer(X_train, y_train)
+shap.plots.beeswarm(shap_values, max_display=20)
+plt.tight_layout()
+st.pyplot(plt.gcf())
