@@ -511,28 +511,6 @@ with col1:
 with col2:
     st.pyplot(plt.gcf())
 st.write("Исходя из важности признаков и принимая во внимание SHAP значения, были удалены признаки default, loan, housing, education.")
-st.header('Сделать прогноз')
-
-with st.form("user_input_form"):
-
-    age_input = st.number_input("Возраст (Age)", min_value=int(data['age'].min()), max_value=int(data['age'].max()), value=int(data['age'].median()), step=1)   
-    marital_input = st.radio("Семейное положение (Marital)", list(data['marital'].value_counts().sort_values(ascending=False).index))
-    job_input = st.selectbox("Профессия (Job)", list(data['job'].value_counts().sort_values(ascending=False).index), index=0)
-  
-    contact_input = st.radio("Тип связи (Contact)", list(data['contact'].value_counts().sort_values(ascending=False).index))
-    month_input = st.selectbox("Месяц последнего контакта (Month)", list(data['month'].value_counts().sort_values(ascending=False).index), index=0)
-    dow_input = st.selectbox("День недели последнего контакта (Day Of Week)", list(data['day_of_week'].value_counts().sort_values(ascending=False).index), index=0)
-
-    col1, col2, col3 = st.columns([1, 1, 1]) 
-    with col1:
-      campaign_input = st.number_input('Количество контактов в рамках этой кампании с клиентом (campaign)', value=int(data['campaign'].median()))
-      euribor3m_input = st.number_input('Ставка Euribor 3 месяца, ежедневный показатель (euribor3m)', value=float(data['euribor3m'].median()))
-    with col2:
-      emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)', value=float(data['emp.var.rate'].median()))
-      employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)', value=float(data['nr.employed'].median()))
-    with col3:
-      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', min_value=90, max_value=300, value=float(data['cons.price.idx'].median()))
-      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)', min_value=30, max_value=200, value=float(data['cons.conf.idx'].median()))
 
 X_train1, X_val, X_test = X_train1.drop(['default','loan','housing','education'], axis=1), X_val.drop(['default','loan','housing','education'], axis=1), X_test.drop(['default','loan','housing','education'], axis=1)
 
@@ -557,6 +535,30 @@ res['Catboost']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
 res['Catboost']['Test ROC AUC'] = test_roc_auc
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
 st.dataframe(MODELS_METRICS)
+
+st.header('Сделать прогноз')
+
+with st.form("user_input_form"):
+
+    age_input = st.number_input("Возраст (Age)", min_value=int(data['age'].min()), max_value=int(data['age'].max()), value=int(data['age'].median()), step=1)   
+    marital_input = st.radio("Семейное положение (Marital)", list(data['marital'].value_counts().sort_values(ascending=False).index))
+    job_input = st.selectbox("Профессия (Job)", list(data['job'].value_counts().sort_values(ascending=False).index), index=0)
+  
+    contact_input = st.radio("Тип связи (Contact)", list(data['contact'].value_counts().sort_values(ascending=False).index))
+    month_input = st.selectbox("Месяц последнего контакта (Month)", list(data['month'].value_counts().sort_values(ascending=False).index), index=0)
+    dow_input = st.selectbox("День недели последнего контакта (Day Of Week)", list(data['day_of_week'].value_counts().sort_values(ascending=False).index), index=0)
+
+    col1, col2, col3 = st.columns([1, 1, 1]) 
+    with col1:
+      campaign_input = st.number_input('Количество контактов в рамках этой кампании с клиентом (campaign)', value=int(data['campaign'].median()))
+      euribor3m_input = st.number_input('Ставка Euribor 3 месяца, ежедневный показатель (euribor3m)', value=float(data['euribor3m'].median()))
+    with col2:
+      emp_var_input = st.number_input('Коэффициент изменения занятости, квартальный показатель (emp.var.rate)', value=float(data['emp.var.rate'].median()))
+      employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)', value=float(data['nr.employed'].median()))
+    with col3:
+      cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', min_value=90, max_value=300, value=float(data['cons.price.idx'].median()))
+      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)', min_value=30, max_value=200, value=float(data['cons.conf.idx'].median()))
+
   
     submit_button = st.form_submit_button("Предсказать")
 
