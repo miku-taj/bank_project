@@ -489,6 +489,10 @@ fig = px.bar(
     title="CatBoost Feature Importances"
 )
 
+catboost_model.fit(
+    X_train, y_train, 
+    cat_features=cat_cols_id
+)
 
 explainer = shap.TreeExplainer(catboost_model)
 shap_values = explainer(X_train, y_train)
