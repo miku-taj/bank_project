@@ -532,7 +532,7 @@ with st.form("user_input_form"):
       employed_input = st.number_input('Количество сотрудников, квартальный показатель (nr.employed)', value=float(data['nr.employed'].median()))
     with col3:
       cons_price_input = st.number_input('Индекс потребительских цен, ежемесячный показатель (cons.price.idx)', min_value=90, max_value=300, value=float(data['cons.price.idx'].median()))
-      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)'), min_value=30, max_value=200, value=float(data['cons.conf.idx'].median()))
+      cons_conf_input = st.number_input('Индекс потребительской уверенности, ежемесячный показатель (cons.conf.idx)', min_value=30, max_value=200, value=float(data['cons.conf.idx'].median()))
 
 X_train1, X_val, X_test = X_train1.drop(['default','loan','housing','education'], axis=1), X_val.drop(['default','loan','housing','education'], axis=1), X_test.drop(['default','loan','housing','education'], axis=1)
 
