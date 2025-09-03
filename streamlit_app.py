@@ -485,8 +485,7 @@ fig = px.bar(
     y=sorted_features,
     x=sorted_importances,
     labels={'y': 'Признак', 'x': 'Важность'},
-    title="CatBoost Feature Importances",
-    height=400
+    title="CatBoost Feature Importances"
 )
 
 # fig.update_layout(xaxis_tickangle=90)
@@ -553,8 +552,7 @@ with st.form("user_input_form"):
             'euribor3m': euribor3m_input,
             'nr.employed': employed_input
         }])
-        # user_input_encoded = encoder.transform(user_input)
-        # for col in ['Age', 'SibSp', 'Parch', 'Fare']:
+        # for col in nume_cols:
         #     user_input_encoded[col] = user_input[col].values
         # user_input_scaled = scaler.transform(user_input_encoded)
         
