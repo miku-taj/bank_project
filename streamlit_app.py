@@ -435,7 +435,7 @@ res['RandomForrest']['Test ROC AUC'] = test_roc_auc
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
 
 st.header('Метрики бейзлайн моделей')
-st.dataframe(MODELS_METRICS, use_container_width=True)
+st.dataframe(MODELS_METRICS.drop('Test ROC AUC', axis=1), use_container_width=True)
 
 cat_cols = X.select_dtypes(include=object).columns
 cat_cols_id = [X.columns.get_loc(col) for col in cat_cols]
@@ -473,7 +473,6 @@ res['Catboost Full']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
 res['Catboost Full']['Test ROC AUC'] = test_roc_auc
 
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
-st.dataframe(MODELS_METRICS)
 
 st.header('Отбор признаков')
 st.subheader('Важность признаков')
@@ -533,12 +532,17 @@ train1_roc_auc = roc_auc_score(y_train1, train1_proba[:, 1])
 val_roc_auc = roc_auc_score(y_val, val_proba[:, 1])
 test_roc_auc = roc_auc_score(y_test, test_proba[:, 1])
 
+res = {}
 res['Catboost'] = {}
 res['Catboost']['Train ROC AUC'] = train1_roc_auc
 res['Catboost']['Val ROC AUC'] = val_roc_auc
 res['Catboost']['Train-Val Difference'] = train1_roc_auc - val_roc_auc
 res['Catboost']['Test ROC AUC'] = test_roc_auc
 MODELS_METRICS = pd.concat((MODELS_METRICS, pd.DataFrame(res).T), axis=0)
+st.dataframe(MODELS_METRICS.loc[['Catboost Full', 'Catboost']].drop('Test ROC AUC', axis=1))
+
+st.header('Сравнение всех моделей на тренировочном, валидационном и тестовом наборах')
+
 st.dataframe(MODELS_METRICS)
 
 explainer = shap.TreeExplainer(catboost_model)
